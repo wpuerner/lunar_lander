@@ -1,0 +1,81 @@
+[gd_scene load_steps=7 format=3 uid="uid://d2knv0r63g0ss"]
+
+[ext_resource type="Script" path="res://lander.gd" id="1_sfjjw"]
+[ext_resource type="PackedScene" uid="uid://b2mf6cyvko2lp" path="res://thruster.tscn" id="2_0w3fn"]
+[ext_resource type="Texture2D" uid="uid://b4ycdub52kb0x" path="res://assets/lander.png" id="2_8irig"]
+[ext_resource type="Texture2D" uid="uid://3ffmphdmylk1" path="res://assets/smoke.png" id="4_yikdi"]
+
+[sub_resource type="Curve" id="Curve_dp3ca"]
+_data = [Vector2(0.0165563, 0.452632), 0.0, 0.0, 0, 0, Vector2(0.513245, 0.452632), 0.0, 0.0, 0, 0, Vector2(0.986755, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_iyulx"]
+radius = 2.0
+
+[node name="Lander" type="RigidBody2D"]
+disable_mode = 1
+center_of_mass_mode = 1
+center_of_mass = Vector2(0, -5.16)
+script = ExtResource("1_sfjjw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_8irig")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-12, 12, -4, 7, 4, 7, 12, 12, 6, 2, 8, -6, -8, -6, -6, 2)
+
+[node name="MainThruster" parent="." instance=ExtResource("2_0w3fn")]
+position = Vector2(0, 7)
+angular_velocity_min = -343.74
+
+[node name="RcsThrusterTopRight" parent="." instance=ExtResource("2_0w3fn")]
+position = Vector2(8, -5)
+rotation = -1.5708
+
+[node name="RcsThrusterBottomRight" parent="." instance=ExtResource("2_0w3fn")]
+position = Vector2(5, 6)
+rotation = -1.5708
+
+[node name="RcsThrusterBottomLeft" parent="." instance=ExtResource("2_0w3fn")]
+position = Vector2(-6, 6)
+rotation = 1.5708
+
+[node name="RcsThrusterTopLeft" parent="." instance=ExtResource("2_0w3fn")]
+position = Vector2(-8, -5)
+rotation = 1.5708
+
+[node name="CrashParticles" type="CPUParticles2D" parent="."]
+emitting = false
+texture = ExtResource("4_yikdi")
+emission_shape = 1
+emission_sphere_radius = 4.24
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 12.42
+initial_velocity_max = 12.42
+angular_velocity_min = -46.45
+angular_velocity_max = 46.45
+scale_amount_curve = SubResource("Curve_dp3ca")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
+polygon = PackedVector2Array(-7, 2, -9, -7, 9, -7, 7, 2)
+
+[node name="LandingDetectorRight" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LandingDetectorRight"]
+position = Vector2(11, 12)
+shape = SubResource("CircleShape2D_iyulx")
+
+[node name="LandingDetectorLeft" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LandingDetectorLeft"]
+position = Vector2(-11, 12)
+shape = SubResource("CircleShape2D_iyulx")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

@@ -1,0 +1,70 @@
+[gd_scene load_steps=6 format=3 uid="uid://m1jh05lv8kcc"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_juwcm"]
+
+[sub_resource type="Theme" id="Theme_4xe8w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vti04"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ejkll"]
+font_size = 42
+
+[sub_resource type="LabelSettings" id="LabelSettings_30gsr"]
+font_size = 42
+
+[node name="Main" type="Node"]
+script = ExtResource("1_juwcm")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_right = 33.0
+offset_bottom = 45.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Fuel"
+
+[node name="FuelBar" type="ProgressBar" parent="VBoxContainer"]
+custom_minimum_size = Vector2(2.21, 15.235)
+layout_mode = 2
+theme = SubResource("Theme_4xe8w")
+theme_override_styles/fill = SubResource("StyleBoxFlat_vti04")
+value = 100.0
+show_percentage = false
+
+[node name="GameOverControl" type="CenterContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="GameOverControl"]
+layout_mode = 2
+
+[node name="GameOverLabel" type="Label" parent="GameOverControl/GridContainer"]
+layout_mode = 2
+text = "Game Over"
+label_settings = SubResource("LabelSettings_ejkll")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResetButton" type="Button" parent="GameOverControl/GridContainer"]
+layout_mode = 2
+text = "Restart"
+
+[node name="LevelCompletedControl" type="CenterContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LevelCompletedLabel" type="Label" parent="LevelCompletedControl"]
+layout_mode = 2
+text = "Level Success!"
+label_settings = SubResource("LabelSettings_30gsr")
+
+[connection signal="pressed" from="GameOverControl/GridContainer/ResetButton" to="." method="_on_reset_button_pressed"]
