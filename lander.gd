@@ -37,28 +37,26 @@ func _integrate_forces(state):
 		state.set_linear_velocity(Vector2(initial_speed, 0.0))
 		init = true
 
-func _physics_process(delta):
-	position.x = wrapf(position.x, 0, get_viewport().size.x)
-	set_gravity_scale(calculate_effective_gravity_scale())
+func _physics_process(_delta):
 	
 	if (game_ended): return
 	
 	# check if lander hit the landing hear too hard
-	if ((landing_detector_right.has_overlapping_bodies()
-	or landing_detector_left.has_overlapping_bodies())
-	and self.linear_velocity.y > 15):
-		crash()
+#	if ((landing_detector_right.has_overlapping_bodies()
+#	or landing_detector_left.has_overlapping_bodies())
+#	and self.linear_velocity.y > 15):
+#		crash()
 	
 	# check if the lander has landed within the landing pad successfully
-	if (landing_detector_right.has_overlapping_bodies() 
-	and landing_detector_left.has_overlapping_bodies() 
-	and abs(self.angular_velocity) < 1 
-	and abs(self.linear_velocity.x) < 1 
-	and abs(self.linear_velocity.y) < 1 
-	and self.position.x > Globals.landing_pad_points[0].x 
-	and self.position.x < Globals.landing_pad_points[-1].x):
-		game_ended = true  
-		emit_signal("landed")
+#	if (landing_detector_right.has_overlapping_bodies() 
+#	and landing_detector_left.has_overlapping_bodies() 
+#	and abs(self.angular_velocity) < 1 
+#	and abs(self.linear_velocity.x) < 1 
+#	and abs(self.linear_velocity.y) < 1 
+#	and self.position.x > Globals.landing_pad_points[0].x 
+#	and self.position.x < Globals.landing_pad_points[-1].x):
+#		game_ended = true  
+#		emit_signal("landed")
 
 	var rcs_intensity = 100.0
 	var thruster_intensity = 100.0
@@ -96,25 +94,13 @@ func _physics_process(delta):
 	else:
 		if main_thruster.emitting: main_thruster.set_emitting(false)
 
-func calculate_effective_gravity_scale():
-	var horizontal_speed = get_linear_velocity().dot(Vector2(1.0,0.0))
-	var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-	return 1 - pow(horizontal_speed, 2) / (gravity * get_height())
-
 func get_height():
 	return get_viewport().size.y - position.y
-	
-func landed_successfully():
-	if !(position.x >= Globals.landing_pad_points[0].x && position.x <= Globals.landing_pad_points[-1].x): return false
-	if linear_velocity.y > 20: return false
-	if rotation_degrees > 45 || rotation_degrees < -45: return false
-	
-	return true
 	
 func crash():
 	crash_particles.set_emitting(true)
 	emit_signal("crashed")
 	game_ended = true
 
-func _on_area_2d_body_entered(body):
+func _on_area_2d_body_entered(_body):
 	crash()

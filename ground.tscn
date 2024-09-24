@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://t4quscyd1cmg"]
+
+[ext_resource type="Script" path="res://ground.gd" id="1_l2urg"]
+[ext_resource type="PackedScene" uid="uid://dnspgghqsnfbp" path="res://flag.tscn" id="2_qs4bk"]
+
+[sub_resource type="Gradient" id="Gradient_yoto0"]
+offsets = PackedFloat32Array(0, 0.800693, 0.935875, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.494118, 0.494118, 0.494118, 0, 0.810844, 0.810844, 0.810844, 0.626087, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ae2mb"]
+gradient = SubResource("Gradient_yoto0")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nkpad"]
+
+[node name="Ground" type="StaticBody2D"]
+position = Vector2(400, 400)
+collision_layer = 3
+script = ExtResource("1_l2urg")
+Flag = ExtResource("2_qs4bk")
+
+[node name="Line2D" type="Line2D" parent="."]
+
+[node name="LandingZone" type="Sprite2D" parent="."]
+position = Vector2(5.96046e-08, 5.96046e-08)
+rotation = 1.5708
+scale = Vector2(1.25, 1.15)
+texture = SubResource("GradientTexture2D_ae2mb")
+
+[node name="Area2D" type="Area2D" parent="."]
+gravity_space_override = 1
+gravity_point = true
+gravity_point_unit_distance = 200.0
+gravity = 40.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(50, 50)
+shape = SubResource("CircleShape2D_nkpad")

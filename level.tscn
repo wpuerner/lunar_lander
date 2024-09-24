@@ -1,31 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://lbkv73ue1lll"]
+[gd_scene load_steps=3 format=3 uid="uid://lbkv73ue1lll"]
 
-[ext_resource type="Script" path="res://ground.gd" id="1_g6qbt"]
-[ext_resource type="PackedScene" uid="uid://dnspgghqsnfbp" path="res://flag.tscn" id="2_fnlqt"]
-[ext_resource type="PackedScene" uid="uid://d2knv0r63g0ss" path="res://lander.tscn" id="3_t2ah0"]
-
-[sub_resource type="Gradient" id="Gradient_yoto0"]
-offsets = PackedFloat32Array(0, 0.800693, 0.935875, 1)
-colors = PackedColorArray(0, 0, 0, 0, 0.494118, 0.494118, 0.494118, 0, 0.810844, 0.810844, 0.810844, 0.626087, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_ae2mb"]
-gradient = SubResource("Gradient_yoto0")
+[ext_resource type="PackedScene" uid="uid://t4quscyd1cmg" path="res://ground.tscn" id="1_fyma5"]
+[ext_resource type="PackedScene" uid="uid://d2knv0r63g0ss" path="res://lander.tscn" id="3_eqnf6"]
 
 [node name="Level" type="Node2D"]
 
-[node name="Ground" type="StaticBody2D" parent="."]
-collision_layer = 3
-script = ExtResource("1_g6qbt")
-Flag = ExtResource("2_fnlqt")
+[node name="Ground" parent="." instance=ExtResource("1_fyma5")]
 
-[node name="Line2D" type="Line2D" parent="Ground"]
+[node name="Ground2" parent="." instance=ExtResource("1_fyma5")]
+position = Vector2(1200, 800)
 
-[node name="LandingZone" type="Sprite2D" parent="Ground"]
-position = Vector2(5.96046e-08, 5.96046e-08)
-rotation = 1.5708
-scale = Vector2(1.25, 1.15)
-texture = SubResource("GradientTexture2D_ae2mb")
+[node name="Lander" parent="." instance=ExtResource("3_eqnf6")]
+position = Vector2(208, 133)
 
-[node name="Lander" parent="." instance=ExtResource("3_t2ah0")]
-position = Vector2(182, 32)
-metadata/_edit_group_ = true
+[node name="Camera2D" type="Camera2D" parent="Lander"]
