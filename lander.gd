@@ -19,6 +19,8 @@ var game_ended = false
 
 var landing_counter = 60
 
+var _fuel: int = 1000
+
 func _ready():
 	main_thruster = get_node("MainThruster")
 	rcs_thruster_top_left = get_node("RcsThrusterTopLeft")
@@ -38,7 +40,6 @@ func _integrate_forces(state):
 		init = true
 
 func _physics_process(delta):
-	position.x = wrapf(position.x, 0, get_viewport().size.x)
 	set_gravity_scale(calculate_effective_gravity_scale())
 	
 	if (game_ended): return
@@ -65,14 +66,14 @@ func _physics_process(delta):
 	var rcs_fuel_rate = 0.1
 	var thruster_fuel_rate = 0.5
 
-	var rotating_right = Input.is_action_pressed("ui_right") and Globals.fuel > 0
-	var rotating_left = Input.is_action_pressed("ui_left") and Globals.fuel > 0
-	var thrusting = Input.is_action_pressed("ui_accept") and Globals.fuel > 0
+	var rotating_right = Input.is_action_pressed("ui_right") and _fuel > 0
+	var rotating_left = Input.is_action_pressed("ui_left") and _fuel > 0
+	var thrusting = Input.is_action_pressed("ui_accept") and _fuel > 0
 
 	if rotating_right:
 		if !rcs_thruster_top_left.emitting: rcs_thruster_top_left.set_emitting(true)
 		if !rcs_thruster_bottom_right.emitting: rcs_thruster_bottom_right.set_emitting(true)
-		Globals.fuel -= rcs_fuel_rate
+		_fuel -= rcs_fuel_rate
 		apply_torque(rcs_intensity)
 	else:
 		if rcs_thruster_top_left.emitting: rcs_thruster_top_left.set_emitting(false)
@@ -82,7 +83,7 @@ func _physics_process(delta):
 	if rotating_left:
 		if !rcs_thruster_top_right.emitting: rcs_thruster_top_right.set_emitting(true)
 		if !rcs_thruster_bottom_left.emitting: rcs_thruster_bottom_left.set_emitting(true)
-		Globals.fuel -= rcs_fuel_rate
+		_fuel -= rcs_fuel_rate
 		apply_torque(-rcs_intensity)
 	else:
 		if rcs_thruster_top_right.emitting: rcs_thruster_top_right.set_emitting(false)
@@ -90,7 +91,7 @@ func _physics_process(delta):
 		
 	if thrusting:
 		if !main_thruster.emitting: main_thruster.set_emitting(true)
-		Globals.fuel -= thruster_fuel_rate
+		_fuel -= thruster_fuel_rate
 		var thrust_force = Vector2(0.0, -thruster_intensity).rotated(rotation)
 		apply_central_force(thrust_force)
 	else:

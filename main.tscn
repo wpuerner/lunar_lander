@@ -1,6 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://m1jh05lv8kcc"]
+[gd_scene load_steps=9 format=3 uid="uid://m1jh05lv8kcc"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_juwcm"]
+[ext_resource type="Script" path="res://scenes/main/camera_2d.gd" id="2_mx2l1"]
+[ext_resource type="PackedScene" uid="uid://d2knv0r63g0ss" path="res://lander.tscn" id="3_awq7s"]
+[ext_resource type="PackedScene" uid="uid://lbkv73ue1lll" path="res://level.tscn" id="4_vptxt"]
 
 [sub_resource type="Theme" id="Theme_4xe8w"]
 
@@ -13,18 +16,30 @@ font_size = 42
 [sub_resource type="LabelSettings" id="LabelSettings_30gsr"]
 font_size = 42
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node" node_paths=PackedStringArray("lander")]
 script = ExtResource("1_juwcm")
+lander = NodePath("Lander")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("lander")]
+position = Vector2(0, 326)
+script = ExtResource("2_mx2l1")
+lander = NodePath("../Lander")
+
+[node name="Lander" parent="." instance=ExtResource("3_awq7s")]
+
+[node name="Level" parent="." instance=ExtResource("4_vptxt")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
 offset_right = 33.0
 offset_bottom = 45.0
 
-[node name="Label" type="Label" parent="VBoxContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/VBoxContainer"]
 layout_mode = 2
 text = "Fuel"
 
-[node name="FuelBar" type="ProgressBar" parent="VBoxContainer"]
+[node name="FuelBar" type="ProgressBar" parent="CanvasLayer/VBoxContainer"]
 custom_minimum_size = Vector2(2.21, 15.235)
 layout_mode = 2
 theme = SubResource("Theme_4xe8w")
@@ -32,7 +47,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_vti04")
 value = 100.0
 show_percentage = false
 
-[node name="GameOverControl" type="CenterContainer" parent="."]
+[node name="GameOverControl" type="CenterContainer" parent="CanvasLayer"]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,21 +55,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="GridContainer" type="GridContainer" parent="GameOverControl"]
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/GameOverControl"]
 layout_mode = 2
 
-[node name="GameOverLabel" type="Label" parent="GameOverControl/GridContainer"]
+[node name="GameOverLabel" type="Label" parent="CanvasLayer/GameOverControl/GridContainer"]
 layout_mode = 2
 text = "Game Over"
 label_settings = SubResource("LabelSettings_ejkll")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ResetButton" type="Button" parent="GameOverControl/GridContainer"]
+[node name="ResetButton" type="Button" parent="CanvasLayer/GameOverControl/GridContainer"]
 layout_mode = 2
 text = "Restart"
 
-[node name="LevelCompletedControl" type="CenterContainer" parent="."]
+[node name="LevelCompletedControl" type="CenterContainer" parent="CanvasLayer"]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -62,9 +77,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LevelCompletedLabel" type="Label" parent="LevelCompletedControl"]
+[node name="LevelCompletedLabel" type="Label" parent="CanvasLayer/LevelCompletedControl"]
 layout_mode = 2
 text = "Level Success!"
 label_settings = SubResource("LabelSettings_30gsr")
 
-[connection signal="pressed" from="GameOverControl/GridContainer/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="crashed" from="Lander" to="." method="_on_lander_crashed"]
+[connection signal="landed" from="Lander" to="." method="_on_lander_landed"]
+[connection signal="pressed" from="CanvasLayer/GameOverControl/GridContainer/ResetButton" to="." method="_on_reset_button_pressed"]

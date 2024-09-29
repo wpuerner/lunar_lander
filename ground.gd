@@ -2,8 +2,13 @@ extends StaticBody2D
 
 @export var Flag: PackedScene
 
+const OFFSET_MULTIPLIER = 0.5
+const GROUND_WIDTH = 3000
+const GROUND_BASE_HEIGHT = 500
+const LANDING_PAD_WIDTH = 200
+const GROUND_SEGMENT_WIDTH = 30
+
 var rng = RandomNumberGenerator.new()
-var offset_multiplier = 0.5
 
 var line_2d: Line2D
 
@@ -12,27 +17,24 @@ func _ready():
 	line_2d = get_node("Line2D")
 	line_2d.width = 2
 	
-	var screen_midy = get_viewport().size.y * 2 / 3
-	var screen_endx = get_viewport().size.x
-	
 	var points = PackedVector2Array()
-	points.append(Vector2(0, screen_midy))
-	build_map_points(Vector2(0, screen_midy), Vector2(screen_endx, screen_midy), 500, 7, points)
+	points.append(Vector2(0, GROUND_BASE_HEIGHT))
+	build_map_points(Vector2(0, GROUND_BASE_HEIGHT), Vector2(GROUND_WIDTH, GROUND_BASE_HEIGHT), 500, _get_regression_depth(GROUND_WIDTH, GROUND_SEGMENT_WIDTH), points)
 	
-	var landing_pad_width = 10  # n points
+	var landing_pad_width_points = LANDING_PAD_WIDTH / GROUND_SEGMENT_WIDTH  # width in points
 	var starting_index = rng.randi_range(points.size() / 5, points.size() * 4 / 5)
 	
 	var left_points = points.slice(0, starting_index)
 	var right_points = points.slice(starting_index, points.size())
-	var landing_pad_points = right_points.slice(0, landing_pad_width)
+	var landing_pad_points = right_points.slice(0, landing_pad_width_points)
 	var landing_pad_y = landing_pad_points[0].y
 	for i in range(landing_pad_points.size()):
 		landing_pad_points[i].y = landing_pad_y
 
-	right_points.resize(right_points.size() - landing_pad_width)
-	var landing_pad_width_px = landing_pad_points[-1].x - landing_pad_points[0].x
+	right_points.resize(right_points.size() - landing_pad_width_points)
+	var landing_pad_width_points_px = landing_pad_points[-1].x - landing_pad_points[0].x
 	for i in range(right_points.size()):
-		right_points[i].x += landing_pad_width_px
+		right_points[i].x += landing_pad_width_points_px
 
 	var final_points = PackedVector2Array()
 	final_points.append_array(left_points)
@@ -46,7 +48,7 @@ func _ready():
 	create_convex_collision_shapes(final_points)
 	
 	var landing_zone = get_node("LandingZone")
-	landing_zone.set_position(Vector2(landing_pad_points[0].x + landing_pad_width_px / 2, landing_pad_points[0].y - landing_pad_width_px / 2))
+	landing_zone.set_position(Vector2(landing_pad_points[0].x + landing_pad_width_points_px / 2, landing_pad_points[0].y - landing_pad_width_points_px / 2))
 	
 	var landing_zone_marker = get_node("LandingZone")
 	
@@ -73,7 +75,6 @@ func is_next_point_concave(one: Vector2, two: Vector2, next: Vector2):
 	var slope = (two.y - one.y) / (two.x - one.x)
 	var height = one.y + (slope * (next.x - one.x))
 	var result = next.y < height
-	print(one, two, next, result)
 	return result
 
 func build_map_points(left: Vector2, right: Vector2, offset: int, depth: int, points: PackedVector2Array):
@@ -91,5 +92,12 @@ func build_map_points(left: Vector2, right: Vector2, offset: int, depth: int, po
 	
 	var mid = Vector2(mid_x, new_mid_y)
 	
-	build_map_points(left, mid, offset * offset_multiplier, depth - 1, points)
-	build_map_points(mid, right, offset * offset_multiplier, depth - 1, points)
+	build_map_points(left, mid, offset * OFFSET_MULTIPLIER, depth - 1, points)
+	build_map_points(mid, right, offset * OFFSET_MULTIPLIER, depth - 1, points)
+
+func _get_regression_depth(total_width: int, segment_width: int):
+	var i = 0
+	while segment_width < total_width:
+		segment_width *= 2
+		i += 1
+	return i
